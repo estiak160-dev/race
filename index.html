@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#08111e" />
+  <title>APEX RACING — 70 Unique Worlds · Sound Edition</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="game-root">
+    <div id="sound-dock" class="sound-dock" aria-label="Game sound settings">
+      <button id="sound-toggle" class="sound-toggle" type="button" aria-pressed="true" aria-label="Turn game sound off">
+        <span id="sound-icon" class="sound-icon">♫</span><span id="sound-label">SOUND ON</span>
+      </button>
+      <label class="sound-volume-wrap" for="sound-volume"><span>VOL</span><input id="sound-volume" type="range" min="0" max="100" value="68" aria-label="Sound volume" /></label>
+    </div>
+    <div id="loading" class="screen-layer">
+      <div class="loading-card">
+        <div class="brand-mark">A</div>
+        <div class="eyebrow">APEX MOTORSPORT</div>
+        <h1>BUILDING THE CIRCUIT</h1>
+        <div class="load-track"><span id="load-fill"></span></div>
+        <p id="load-text">Preparing your race...</p>
+      </div>
+    </div>
+
+    <div id="hud" class="hidden">
+      <header class="topbar">
+        <div class="brand"><span class="brand-icon">A</span><span>APEX <b>RACING</b></span></div>
+        <div class="race-meta">
+          <div><small>TRACK</small><strong id="track-name">GREEN VALLEY GP</strong></div>
+          <div><small>CAREER</small><strong id="session-label">LEVEL 01 · 3 LAPS</strong></div>
+        </div>
+        <button id="pause-btn" class="icon-btn" aria-label="Pause">Ⅱ</button>
+      </header>
+
+      <section class="race-stats">
+        <div class="stat-card"><small>POSITION</small><strong id="position">1<span>ST</span></strong></div>
+        <div class="stat-card"><small>LAP</small><strong id="lap">1 <i>/ 3</i></strong></div>
+        <div class="stat-card timer-card"><small>LAP TIME</small><strong id="lap-time">00:00.000</strong></div>
+        <div class="stat-card"><small>BEST LAP</small><strong id="best-time">--:--.---</strong></div>
+      </section>
+
+      <div class="right-panel">
+        <div class="minimap-wrap"><canvas id="minimap" width="180" height="180"></canvas><span> CIRCUIT MAP </span></div>
+        <div class="gear-panel"><small>GEAR</small><strong id="gear">1</strong><div class="rpm-bar"><span id="rpm-fill"></span></div><small id="rpm-label">RPM 1,200</small></div>
+      </div>
+
+      <div class="bottom-hud">
+        <div class="speed-block"><div class="speed-value"><strong id="speed">000</strong><span>KM/H</span></div><div class="speed-label">VEHICLE SPEED</div></div>
+        <div class="nitro-block"><div class="nitro-head"><span>NITROUS</span><b id="nitro-label">100%</b></div><div class="nitro-track"><span id="nitro-fill"></span></div><small>HOLD SHIFT TO BOOST</small></div>
+      </div>
+      <div id="toast" class="toast"></div>
+    </div>
+
+    <div id="countdown" class="countdown hidden">3</div>
+
+    <div id="start-screen" class="screen-layer hidden">
+      <div class="menu-card career-card">
+        <div class="career-heading">
+          <div>
+            <div class="eyebrow">APEX MOTORSPORT · CAREER MODE</div>
+            <h1>CLIMB THE<br /><em>RACING LADDER.</em></h1>
+            <p>Explore 70 individually built racing worlds. Choose any unlocked event, race three laps and finish in the top three to unlock the next challenge.</p>
+          </div>
+          <div class="career-emblem"><strong>70</strong><small>LEVELS</small></div>
+        </div>
+        <div class="environment-showcase" aria-live="polite">
+          <div class="environment-showcase-copy">
+            <small id="environment-tier">ROOKIE ENVIRONMENT · EVENT 1/10 · CLEAR MORNING</small>
+            <strong id="environment-name">GREEN VALLEY CIRCUIT</strong>
+            <p id="environment-description">A bright beginner circuit through green hills, pine woods and open farm country.</p>
+          </div>
+          <div id="environment-swatches" class="environment-swatches" aria-label="Environment color palette"><i></i><i></i><i></i></div>
+        </div>
+        <div class="career-progress">
+          <div class="career-progress-label"><strong>CAREER PROGRESS</strong><span id="career-progress-text">1 / 70 LEVELS UNLOCKED</span></div>
+          <div class="career-progress-track"><span id="career-progress-fill"></span></div>
+        </div>
+        <div class="level-picker-heading"><span>SELECT AN UNLOCKED LEVEL</span><small>7 TIERS · 10 LEVELS EACH</small></div>
+        <div id="level-grid" class="level-grid" aria-label="70 career levels"></div>
+        <div class="selected-level-panel">
+          <div class="selected-level-copy"><small>SELECTED EVENT</small><strong id="selected-level-title">LEVEL 01 · ROOKIE</strong><p id="selected-level-detail">AI difficulty increases gradually.</p></div>
+          <button id="start-btn" class="primary-btn">START LEVEL 1 <span>→</span></button>
+        </div>
+        <div class="controls-note">W / ↑ ACCELERATE · A / D STEER · S / ↓ BRAKE · SPACE HANDBRAKE · SHIFT NITRO</div>
+      </div>
+    </div>
+
+    <div id="pause-screen" class="screen-layer hidden">
+      <div class="menu-card compact">
+        <div class="eyebrow">RACE CONTROL</div><h2>PAUSED</h2>
+        <p>Take a breath. The grid is waiting.</p>
+        <button id="resume-btn" class="primary-btn">RESUME RACE <span>→</span></button>
+        <button id="restart-btn" class="secondary-btn">RESTART RACE</button>
+      </div>
+    </div>
+
+    <div id="finish-screen" class="screen-layer hidden">
+      <div class="menu-card finish-card">
+        <div class="eyebrow">CHEQUERED FLAG · LEVEL RESULTS</div>
+        <div class="finish-header">
+          <div><h1 id="finish-title">RACE<br /><em>COMPLETE.</em></h1><p id="finish-message">You crossed the finish line.</p></div>
+          <div class="finish-time"><small>BEST LAP</small><strong id="finish-best">--:--.---</strong></div>
+        </div>
+        <div class="standings-heading"><strong>FINAL CLASSIFICATION</strong><span>ALL 5 CARS</span></div>
+        <div class="standings-wrap">
+          <table class="standings-table">
+            <thead><tr><th>POS</th><th>DRIVER / CAR</th><th>LAP PROGRESS</th><th>STATUS</th></tr></thead>
+            <tbody id="results-table-body"></tbody>
+          </table>
+        </div>
+        <div class="finish-actions">
+          <button id="next-level-btn" class="primary-btn hidden">NEXT LEVEL <span>→</span></button>
+          <button id="race-again-btn" class="secondary-btn">RETRY THIS LEVEL</button>
+          <button id="level-select-btn" class="secondary-btn">LEVEL SELECT</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="mobile-controls" class="mobile-controls">
+      <div class="steer-controls">
+        <button data-control="ArrowLeft" aria-label="Steer left">‹</button>
+        <button data-control="ArrowRight" aria-label="Steer right">›</button>
+      </div>
+      <div class="pedal-controls">
+        <button data-control="ShiftLeft" class="nitro-touch">N₂O</button>
+        <button data-control="ArrowDown" class="brake-touch">BRAKE</button>
+        <button data-control="ArrowUp" class="gas-touch">GAS</button>
+      </div>
+    </div>
+    <div id="error-message" class="error-message hidden"></div>
+  </div>
+  <script type="module" src="game.js"></script>
+</body>
+</html>
